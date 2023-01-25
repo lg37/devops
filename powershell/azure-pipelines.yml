@@ -15,6 +15,6 @@ steps:
     azureSubscription: 'VisualStudio'
     ScriptType: 'FilePath'
     ScriptPath: 'powershell/deploy.ps1'
-    ScriptArguments: '-ResourceGroupName test_pipeline -templatefile azuredeploy.json -parameterfile parameters.json -namePrefix $(prefix)'
+    ScriptArguments: '-ResourceGroupName test_pipeline -templatefile powershell/azuredeploy.json -parameterfile powershell/parameters.json -namePrefix $(prefix)'
     azurePowerShellVersion: 'LatestVersion'
     pwsh: true
