@@ -1,7 +1,4 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Pipeline pour un création RG, vnet, subnet, public IP, NSG, linux VM
 
 trigger: none
 
@@ -34,3 +31,40 @@ stages:
               backendAzureRmStorageAccountName: '$(saname)'
               backendAzureRmContainerName: '$(statecontainer)'
               backendAzureRmKey: '$(statepath)'
+          - task: TerraformTaskV3@3
+            displayName: validate
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+  - stage: tfapply
+    condition: succeeded('tfvalidate')
+    dependsOn: tfvalidate
+    jobs:
+      - job: apply
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTaskV3@3
+            displayName: init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'VisualStudio'
+              backendAzureRmResourceGroupName: '$(sarg)'
+              backendAzureRmStorageAccountName: '$(saname)'
+              backendAzureRmContainerName: '$(statecontainer)'
+              backendAzureRmKey: '$(statepath)'
+          - task: TerraformTaskV3@3
+            displayName: plan
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              environmentServiceNameAzureRM: 'VisualStudio'
+          - task: TerraformTaskV3@3
+            displayName: apply
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              environmentServiceNameAzureRM: 'VisualStudio'
