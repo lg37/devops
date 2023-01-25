@@ -1,0 +1,22 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- powershell: echo "Affichage variable portail DevOps dans Yaml:" $(prefix)
+- powershell: echo "Affichage variable from keyvault:" $(monPassword)
+- task: AzurePowerShell@5
+  inputs:
+    azureSubscription: 'VisualStudio'
+    ScriptType: 'FilePath'
+    ScriptPath: './deploy.ps1'
+    ScriptArguments: '-ResourceGroupName test_pipeline -templatefile azuredeploy.json -parameterfile parameters.json -namePrefix $(prefix)'
+    azurePowerShellVersion: 'LatestVersion'
+    pwsh: true
