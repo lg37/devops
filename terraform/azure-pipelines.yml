@@ -35,8 +35,8 @@ stages:
               backendAzureRmKey: '$(statepath)'
           - task: TerraformTaskV3@3
             displayName: validate
-            workingDirectory: '$(System.DefaultWorkingDirectory)\$(truepath)'
             inputs:
+              script: 'cd $(System.DefaultWorkingDirectory)/$(truepath)/'
               provider: 'azurerm'
               command: 'validate'
   - stage: tfdeploy
@@ -51,8 +51,8 @@ stages:
               terraformVersion: 'latest'
           - task: TerraformTaskV3@3
             displayName: init
-            workingDirectory: '$(System.DefaultWorkingDirectory)\$(truepath)'
             inputs:
+              script: 'cd $(System.DefaultWorkingDirectory)/$(truepath)/'
               provider: 'azurerm'
               command: 'init'
               backendServiceArm: 'VisualStudio'
@@ -62,15 +62,15 @@ stages:
               backendAzureRmKey: '$(statepath)'
           - task: TerraformTaskV3@3
             displayName: plan
-            workingDirectory: '$(System.DefaultWorkingDirectory)\$(truepath)'
             inputs:
+              script: 'cd $(System.DefaultWorkingDirectory)/$(truepath)/'
               provider: 'azurerm'
               command: 'plan'
               environmentServiceNameAzureRM: 'VisualStudio'
           - task: TerraformTaskV3@3
             displayName: apply
-            workingDirectory: '$(System.DefaultWorkingDirectory)\$(truepath)'
             inputs:
+              script: 'cd $(System.DefaultWorkingDirectory)/$(truepath)/'
               provider: 'azurerm'
               command: 'apply'
               environmentServiceNameAzureRM: 'VisualStudio'
