@@ -11,14 +11,14 @@ pool:
 variables:
   sarg: 'lg_terraform'
   saname: 'lgterraformsa'
-  statecontainer:'terraform'
+  statecontainer: 'terraform'
   statepath: 'tf.terraform.tfstate'
 
 stages:
   - stage: tfvalidate
     jobs:
       - job validate
-        ContinueOnError: false
+        continueOnError: false
         steps:
           - task: TerraformInstaller@0
             displayName: tfinstall
