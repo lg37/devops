@@ -24,7 +24,7 @@ stages:
               terraformVersion: 'latest'
           - task: TerraformTaskV3@3
             displayName: init
-            workingDirectory: '$(System.DefaultWorkingDirectory)\$(truepath)'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/$(truepath)/'
             inputs:
               provider: 'azurerm'
               command: 'init'
