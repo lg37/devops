@@ -10,6 +10,7 @@ variables:
   saname: 'lgterraformsa'
   statecontainer: 'terraform'
   statepath: 'tf.terraform.tfstate'
+  truepath: 'terraform'
 
 stages:
   - stage: tfvalidate
@@ -23,6 +24,7 @@ stages:
               terraformVersion: 'latest'
           - task: TerraformTaskV3@3
             displayName: init
+            workingDirectory: '$(System.DefaultWorkingDirectory)\$(truepath)'
             inputs:
               provider: 'azurerm'
               command: 'init'
@@ -33,6 +35,7 @@ stages:
               backendAzureRmKey: '$(statepath)'
           - task: TerraformTaskV3@3
             displayName: validate
+            workingDirectory: '$(System.DefaultWorkingDirectory)\$(truepath)'
             inputs:
               provider: 'azurerm'
               command: 'validate'
@@ -48,6 +51,7 @@ stages:
               terraformVersion: 'latest'
           - task: TerraformTaskV3@3
             displayName: init
+            workingDirectory: '$(System.DefaultWorkingDirectory)\$(truepath)'
             inputs:
               provider: 'azurerm'
               command: 'init'
@@ -58,12 +62,14 @@ stages:
               backendAzureRmKey: '$(statepath)'
           - task: TerraformTaskV3@3
             displayName: plan
+            workingDirectory: '$(System.DefaultWorkingDirectory)\$(truepath)'
             inputs:
               provider: 'azurerm'
               command: 'plan'
               environmentServiceNameAzureRM: 'VisualStudio'
           - task: TerraformTaskV3@3
             displayName: apply
+            workingDirectory: '$(System.DefaultWorkingDirectory)\$(truepath)'
             inputs:
               provider: 'azurerm'
               command: 'apply'
