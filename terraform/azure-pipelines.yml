@@ -12,7 +12,7 @@ variables:
   sarg: 'lg_terraform'
   saname: 'lgterraformsa'
   statecontainer:'terraform'
-  statekey: 'tf.terraform.tfstate'
+  statepath: 'tf.terraform.tfstate'
 
 stages:
   - stage: tfvalidate
