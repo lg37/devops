@@ -10,7 +10,6 @@ pool:
 
 steps:
 - powershell: echo "Affichage variable portail DevOps dans Yaml:" $(prefix)
-- powershell: echo "Affichage variable from keyvault:" $(monPassword)
 - task: AzurePowerShell@5
   inputs:
     azureSubscription: 'VisualStudio'
