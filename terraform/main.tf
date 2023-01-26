@@ -127,15 +127,6 @@ resource "azurerm_linux_virtual_machine" "mylinux1" {
     version   = "latest"
   }
 
-  provisioner "local-exec" {
-    command = templatefile("${var.host_os}-ssh-script.tpl", {
-      hostname     = self.public_ip_address
-      user         = "azureuser"
-      identityfile = "~/.ssh/mykey"
-    })
-    interpreter = var.host_os == "windows" ? ["Powershell", "-Command"] : ["bash", "-c"]
-  }
-
   tags = {
     env = "dev"
   }
