@@ -10,7 +10,6 @@ variables:
   saname: 'lgterraformsa'
   statecontainer: 'terraform'
   statepath: 'dev.terraform.tfstate'
-  truepath: 'terraform'
 
 stages:
   - stage: tfvalidate
@@ -25,7 +24,7 @@ stages:
           - task: TerraformTaskV3@3
             displayName: init
             inputs:
-              script: 'cd $(System.DefaultWorkingDirectory)/$(truepath)/'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               provider: 'azurerm'
               command: 'init'
               backendServiceArm: 'VisualStudio'
@@ -36,9 +35,10 @@ stages:
           - task: TerraformTaskV3@3
             displayName: validate
             inputs:
-              script: 'cd $(System.DefaultWorkingDirectory)/$(truepath)/'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               provider: 'azurerm'
               command: 'validate'
+          
   - stage: tfdeploy
     condition: succeeded('tfvalidate')
     dependsOn: tfvalidate
@@ -52,7 +52,7 @@ stages:
           - task: TerraformTaskV3@3
             displayName: init
             inputs:
-              script: 'cd $(System.DefaultWorkingDirectory)/$(truepath)/'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               provider: 'azurerm'
               command: 'init'
               backendServiceArm: 'VisualStudio'
@@ -63,14 +63,14 @@ stages:
           - task: TerraformTaskV3@3
             displayName: plan
             inputs:
-              script: 'cd $(System.DefaultWorkingDirectory)/$(truepath)/'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               provider: 'azurerm'
               command: 'plan'
               environmentServiceNameAzureRM: 'VisualStudio'
           - task: TerraformTaskV3@3
             displayName: apply
             inputs:
-              script: 'cd $(System.DefaultWorkingDirectory)/$(truepath)/'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               provider: 'azurerm'
               command: 'apply'
               environmentServiceNameAzureRM: 'VisualStudio'
