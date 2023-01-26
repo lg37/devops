@@ -112,7 +112,7 @@ resource "azurerm_linux_virtual_machine" "mylinux1" {
 
   admin_ssh_key {
     username   = "azureuser"
-    public_key = file("~/.ssh/mykey.pub")
+    public_key = file("~/mykey.pub")
   }
 
   os_disk {
