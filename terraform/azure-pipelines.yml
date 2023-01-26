@@ -9,7 +9,7 @@ variables:
   sarg: 'lg_terraform'
   saname: 'lgterraformsa'
   statecontainer: 'terraform'
-  statepath: 'tf.terraform.tfstate'
+  statepath: 'dev/terraform.tfstate'
   truepath: 'terraform'
 
 stages:
