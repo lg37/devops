@@ -8,7 +8,7 @@ resource "azurerm_resource_group" "myrg" {
   name     = var.rg_name
   location = "West Europe"
   tags = {
-    env = "dev"
+    env = "adv"
   }
 }
 
@@ -28,7 +28,7 @@ module "myvnet" {
     subnet2 = azurerm_network_security_group.mysubnet-nsg.id
   }
   tags = {
-    env = "dev"
+    env = "adv"
   }
 }
 
@@ -37,7 +37,7 @@ resource "azurerm_network_security_group" "mysubnet-nsg" {
   location            = azurerm_resource_group.myrg.location
   resource_group_name = azurerm_resource_group.myrg.name
   tags = {
-    env = "dev"
+    env = "adv"
   }
 }
 
