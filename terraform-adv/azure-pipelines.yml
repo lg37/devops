@@ -1,0 +1,76 @@
+# Pipeline pour un création RG, vnet, subnet, public IP, NSG, linux VM
+
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  sarg: 'lg_terraform'
+  saname: 'lgterraformsa'
+  statecontainer: 'terraform'
+  statepath: 'adv.terraform.tfstate'
+
+stages:
+  - stage: tfvalidate
+    jobs:
+      - job: validate
+        continueOnError: false
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTaskV3@3
+            displayName: init
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'VS'
+              backendAzureRmResourceGroupName: '$(sarg)'
+              backendAzureRmStorageAccountName: '$(saname)'
+              backendAzureRmContainerName: '$(statecontainer)'
+              backendAzureRmKey: '$(statepath)'
+          - task: TerraformTaskV3@3
+            displayName: validate
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
+              provider: 'azurerm'
+              command: 'validate'
+          
+  - stage: tfdeploy
+    condition: succeeded('tfvalidate')
+    dependsOn: tfvalidate
+    jobs:
+      - job: apply
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTaskV3@3
+            displayName: init
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'VS'
+              backendAzureRmResourceGroupName: '$(sarg)'
+              backendAzureRmStorageAccountName: '$(saname)'
+              backendAzureRmContainerName: '$(statecontainer)'
+              backendAzureRmKey: '$(statepath)'
+          - task: TerraformTaskV3@3
+            displayName: plan
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
+              provider: 'azurerm'
+              command: 'plan'
+              environmentServiceNameAzureRM: 'VS'
+          - task: TerraformTaskV3@3
+            displayName: apply
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+              provider: 'azurerm'
+              command: 'apply'
+              environmentServiceNameAzureRM: 'VS'
