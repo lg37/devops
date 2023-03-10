@@ -16,6 +16,8 @@ variables:
   saname: 'lgterraformsa'
   statecontainer: 'terraform'
   statepath: 'adv.terraform.tfstate'
+  TF_VAR_rg_name: 'devops-git-trigger'
+  TF_VAR_vnet_name : 'devops-vnet'
 
 stages:
   - stage: tfvalidate
