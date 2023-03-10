@@ -1,9 +1,9 @@
-variable "rg_name" {
+variable "RG_NAME" {
   type    = string
   default = "exemple"
 }
 
-variable "vnet_name" {
+variable "VNET_NAME" {
   type    = string
   default = "exemple"
 }

@@ -5,7 +5,7 @@ provider "azurerm" {
 
 # Create a resource group
 resource "azurerm_resource_group" "myrg" {
-  name     = var.rg_name
+  name     = var.RG_NAME
   location = "West Europe"
   tags = {
     env = "adv"
@@ -16,7 +16,7 @@ module "myvnet" {
   source  = "Azure/vnet/azurerm"
   version = "4.0.0"
 
-  vnet_name           = var.vnet_name
+  vnet_name           = var.VNET_NAME
   resource_group_name = azurerm_resource_group.myrg.name
   use_for_each        = true
   vnet_location       = azurerm_resource_group.myrg.location
