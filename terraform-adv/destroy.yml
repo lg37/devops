@@ -1,0 +1,71 @@
+# Pipeline pour un création RG, vnet, subnet, public IP, NSG, linux VM avec module
+
+trigger: none
+  
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  sarg: 'lg_terraform'
+  saname: 'lgterraformsa'
+  statecontainer: 'terraform'
+  statepath: 'adv.terraform.tfstate'
+  TF_VAR_rg_name: 'devops-git-trigger'
+  TF_VAR_vnet_name : 'devops-vnet'
+
+stages:
+  - stage: tfvalidate
+    jobs:
+      - job: validate
+        continueOnError: false
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTaskV3@3
+            displayName: init
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'VS'
+              backendAzureRmResourceGroupName: '$(sarg)'
+              backendAzureRmStorageAccountName: '$(saname)'
+              backendAzureRmContainerName: '$(statecontainer)'
+              backendAzureRmKey: '$(statepath)'
+          - task: TerraformTaskV3@3
+            displayName: validate
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
+              provider: 'azurerm'
+              command: 'validate'
+          
+  - stage: tfdestroy
+    condition: succeeded('tfvalidate')
+    dependsOn: tfvalidate
+    jobs:
+      - job: destroy
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTaskV3@3
+            displayName: init
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'VS'
+              backendAzureRmResourceGroupName: '$(sarg)'
+              backendAzureRmStorageAccountName: '$(saname)'
+              backendAzureRmContainerName: '$(statecontainer)'
+              backendAzureRmKey: '$(statepath)'
+          - task: TerraformTaskV3@3
+            displayName: destroy
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
+              provider: 'azurerm'
+              command: 'destroy'
+              environmentServiceNameAzureRM: 'VS'
