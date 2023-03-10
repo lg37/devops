@@ -1,4 +1,4 @@
-# Pipeline pour un création RG, vnet, subnet, public IP, NSG, linux VM
+# Pipeline pour un création RG, vnet, subnet, public IP, NSG, linux VM avec module
 
 trigger: none
 
