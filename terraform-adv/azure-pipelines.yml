@@ -2,7 +2,7 @@
 
 # pr=pull request
 # trigger=direct commit
-pr:
+trigger:
   branches:
     include:
     - main
