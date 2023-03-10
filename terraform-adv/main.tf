@@ -57,7 +57,7 @@ resource "azurerm_network_security_rule" "subnet-nsg-rule" {
 
 module "add_vm" {
   source    = "./modules/m-linuxvm"
-  vm_name   = "mon-linux"
+  vm_name   = "ma-linux"
   vm_size   = "Standard_F2"
   rg        = azurerm_resource_group.myrg.name
   location  = "westeurope"
