@@ -7,6 +7,8 @@ trigger:
   paths:
     include:
     - terraform-adv
+    exclude:
+    - terraform-adv\destroy.yml
 
 pool:
   vmImage: ubuntu-latest
