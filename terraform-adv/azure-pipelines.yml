@@ -1,6 +1,8 @@
 # Pipeline pour un création RG, vnet, subnet, public IP, NSG, linux VM avec module
 
-trigger:
+# pr=pull request
+# trigger=direct commit
+pr:
   branches:
     include:
     - main
