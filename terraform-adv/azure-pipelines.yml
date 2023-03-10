@@ -1,6 +1,12 @@
 # Pipeline pour un création RG, vnet, subnet, public IP, NSG, linux VM
 
-trigger: none
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - terraform-adv
 
 pool:
   vmImage: ubuntu-latest
