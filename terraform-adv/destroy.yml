@@ -12,7 +12,7 @@ variables:
   TF_VAR_VNET_NAME : 'devops-vnet'
 
 stages:
-  - stage: 'Terraform Validate'
+  - stage: tfvalidate
     jobs:
       - job: validate
         continueOnError: false
@@ -46,7 +46,7 @@ stages:
               provider: 'azurerm'
               command: 'validate'
           
-  - stage: 'Terraform Destroy'
+  - stage: tfdestroy
     condition: succeeded('tfvalidate')
     dependsOn: tfvalidate
     jobs:
