@@ -47,7 +47,7 @@ stages:
               backendAzureRmResourceGroupName: '$(backend-rgname)'
               backendAzureRmStorageAccountName: '$(backend-saname)'
               backendAzureRmContainerName: '$(backend-container)'
-              backendAzureRmKey: '$(sbackend-path)'
+              backendAzureRmKey: '$(backend-path)'
           - task: TerraformTaskV3@3
             displayName: validate
             inputs:
