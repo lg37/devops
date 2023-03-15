@@ -17,8 +17,8 @@ pool:
 variables:
   azure_connection: 'VS'
   key_vault_name: 'mylgkv'
-  TF_VAR_RG_NAME: 'devops-git-trigger'
-  TF_VAR_VNET_NAME : 'devops-vnet'
+  TF_VAR_RG_NAME: 'devops-rg-test'
+  TF_VAR_VNET_NAME : 'devops-vnet-test'
 
 stages:     
   - stage: tfvalidate
@@ -82,7 +82,7 @@ stages:
               backendAzureRmResourceGroupName: '$(backend-rgname)'
               backendAzureRmStorageAccountName: '$(backend-saname)'
               backendAzureRmContainerName: '$(backend-container)'
-              backendAzureRmKey: '$(sbackend-path)'
+              backendAzureRmKey: '$(backend-path)'
           - task: TerraformTaskV3@3
             displayName: plan
             inputs:
