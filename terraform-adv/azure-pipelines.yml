@@ -61,6 +61,13 @@ stages:
     jobs:
       - job: apply
         steps:
+          - task: AzureKeyvault@2
+            displayName: 'Get secrets from KV to variables'
+            inputs:
+              azureSubscription: '$(azure_connection)'
+              KeyVaultName: '$(key_vault_name)'
+              SecretsFilter: '*'                  # 'backend-rgname','backend-saname','backend-container','backend-path'
+              RunAsPreJob: false
           - task: TerraformInstaller@0
             displayName: tfinstall
             inputs:
