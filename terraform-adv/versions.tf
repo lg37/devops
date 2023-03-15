@@ -9,9 +9,5 @@ terraform {
   }
 
   backend "azurerm" {
-    resource_group_name  = "lg_terraform"
-    storage_account_name = "lgterraformsa"
-    container_name       = "terraform"
-    key                  = "adv.terraform.tfstate"
   }
 }

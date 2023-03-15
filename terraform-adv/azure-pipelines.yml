@@ -1,7 +1,6 @@
 # Pipeline pour un création RG, vnet, subnet, public IP, NSG, linux VM avec module
 
-# pr=pull request
-# trigger=direct commit
+# trigger=when commit to main
 trigger:
   branches:
     include:
@@ -16,19 +15,24 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  sarg: 'lg_terraform'
-  saname: 'lgterraformsa'
-  statecontainer: 'terraform'
-  statepath: 'adv.terraform.tfstate'
+  azure_connection: 'VS'
+  key_vault_name: 'mylgkv'
   TF_VAR_RG_NAME: 'devops-git-trigger'
   TF_VAR_VNET_NAME : 'devops-vnet'
 
-stages:
+stages:     
   - stage: tfvalidate
     jobs:
       - job: validate
         continueOnError: false
         steps:
+          - task: AzureKeyvault@2
+            displayname: get secrets from KV to variables
+            inputs:
+              azureSubscription: '$(azure_connection)'
+              KeyVaultName: '$(key_vault_name)'
+              SecretsFilter: 'backend-rgname','backend-saname','backend-container','backend-path'
+              RunAsPreJob: false
           - task: TerraformInstaller@0
             displayName: tfinstall
             inputs:
@@ -39,11 +43,11 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
               provider: 'azurerm'
               command: 'init'
-              backendServiceArm: 'VS'
-              backendAzureRmResourceGroupName: '$(sarg)'
-              backendAzureRmStorageAccountName: '$(saname)'
-              backendAzureRmContainerName: '$(statecontainer)'
-              backendAzureRmKey: '$(statepath)'
+              backendServiceArm: '$(azure_connection)'
+              backendAzureRmResourceGroupName: '$(backend-rgname)'
+              backendAzureRmStorageAccountName: '$(backend-saname)'
+              backendAzureRmContainerName: '$(backend-container)'
+              backendAzureRmKey: '$(sbackend-path)'
           - task: TerraformTaskV3@3
             displayName: validate
             inputs:
@@ -67,22 +71,22 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
               provider: 'azurerm'
               command: 'init'
-              backendServiceArm: 'VS'
-              backendAzureRmResourceGroupName: '$(sarg)'
-              backendAzureRmStorageAccountName: '$(saname)'
-              backendAzureRmContainerName: '$(statecontainer)'
-              backendAzureRmKey: '$(statepath)'
+              backendServiceArm: '$(azure_connection)'
+              backendAzureRmResourceGroupName: '$(backend-rgname)'
+              backendAzureRmStorageAccountName: '$(backend-saname)'
+              backendAzureRmContainerName: '$(backend-container)'
+              backendAzureRmKey: '$(sbackend-path)'
           - task: TerraformTaskV3@3
             displayName: plan
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
               provider: 'azurerm'
               command: 'plan'
-              environmentServiceNameAzureRM: 'VS'
+              environmentServiceNameAzureRM: '$(azure_connection)'
           - task: TerraformTaskV3@3
             displayName: apply
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
               provider: 'azurerm'
               command: 'apply'
-              environmentServiceNameAzureRM: 'VS'
+              environmentServiceNameAzureRM: '$(azure_connection)'
