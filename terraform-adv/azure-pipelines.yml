@@ -27,7 +27,7 @@ stages:
         continueOnError: false
         steps:
           - task: AzureKeyvault@2
-            displayname: 'Get secrets from KV to variables'
+            displayName: 'Get secrets from KV to variables'
             inputs:
               azureSubscription: '$(azure_connection)'
               KeyVaultName: '$(key_vault_name)'
