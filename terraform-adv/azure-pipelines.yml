@@ -41,7 +41,6 @@ stages:
             displayName: init
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
-              # provider: 'azurerm'
               command: 'init'
               backendServiceArm: '$(azure_connection)'
               backendAzureRmResourceGroupName: '$(backend-rgname)'
@@ -52,7 +51,6 @@ stages:
             displayName: validate
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
-              # provider: 'azurerm'
               command: 'validate'
           
   - stage: tfdeploy
@@ -76,7 +74,6 @@ stages:
             displayName: init
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
-              provider: 'azurerm'
               command: 'init'
               backendServiceArm: '$(azure_connection)'
               backendAzureRmResourceGroupName: '$(backend-rgname)'
@@ -87,13 +84,11 @@ stages:
             displayName: plan
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
-              provider: 'azurerm'
               command: 'plan'
               environmentServiceNameAzureRM: '$(azure_connection)'
           - task: TerraformTaskV3@3
             displayName: apply
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
-              provider: 'azurerm'
               command: 'apply'
               environmentServiceNameAzureRM: '$(azure_connection)'
