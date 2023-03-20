@@ -3,7 +3,12 @@ variable "RG_NAME" {
   default = "exemple"
 }
 
-variable "VNET_NAME" {
+variable "HUB_VNET_NAME" {
   type    = string
-  default = "exemple"
+  default = "hub"
+}
+
+variable "SPOKE1_VNET_NAME" {
+  type    = string
+  default = "spoke"
 }
