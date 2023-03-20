@@ -116,7 +116,7 @@ resource "azurerm_firewall" "hub-firewall" {
 
   ip_configuration {
     name                 = "configuration"
-    subnet_id            = module.spoke1vnet.vnet_subnets[0]
+    subnet_id            = module.hubvnet.vnet_subnets[0]
     public_ip_address_id = azurerm_public_ip.firewall-pip.id
   }
 }
