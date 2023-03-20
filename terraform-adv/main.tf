@@ -24,7 +24,6 @@ module "hubvnet" {
   subnet_names        = ["AzureFirewallSubnet", "subnet2"]
   subnet_prefixes     = ["10.1.1.0/26", "10.1.2.0/24"]
   nsg_ids = {
-    subnet1 = azurerm_network_security_group.mysubnet-nsg.id,
     subnet2 = azurerm_network_security_group.mysubnet-nsg.id
   }
   tags = {
