@@ -41,7 +41,7 @@ stages:
             displayName: init
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
-              provider: 'azurerm'
+              # provider: 'azurerm'
               command: 'init'
               backendServiceArm: '$(azure_connection)'
               backendAzureRmResourceGroupName: '$(backend-rgname)'
@@ -52,7 +52,7 @@ stages:
             displayName: validate
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-adv'
-              provider: 'azurerm'
+              # provider: 'azurerm'
               command: 'validate'
           
   - stage: tfdeploy
