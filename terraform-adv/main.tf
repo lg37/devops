@@ -55,15 +55,15 @@ module "spoke1vnet" {
 resource "azurerm_virtual_network_peering" "hub-to-spoke1" {
   name                      = "hub-to-spoke1"
   resource_group_name       = azurerm_resource_group.myrg.name
-  virtual_network_name      = azurerm_virtual_network.hubvnet.name
-  remote_virtual_network_id = azurerm_virtual_network.spoke1vnet.id
+  virtual_network_name      = module.hubvnet.name
+  remote_virtual_network_id = module.spoke1vnet.id
 }
 
 resource "azurerm_virtual_network_peering" "spoke1-to-hub" {
   name                      = "spoke1-to-hub"
   resource_group_name       = azurerm_resource_group.myrg.name
-  virtual_network_name      = azurerm_virtual_network.spoke1vnet.name
-  remote_virtual_network_id = azurerm_virtual_network.hubvnet.id
+  virtual_network_name      = module.spoke1vnet.name
+  remote_virtual_network_id = module.hubvnet.id
 }
 
 # create default route to NVA (force traffic to hub firewall)
