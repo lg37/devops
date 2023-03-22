@@ -94,13 +94,6 @@ resource "azurerm_route_table" "firewall-route-table" {
   }
 }
 
-# associate Route table to subnets
-
-resource "azurerm_subnet_route_table_association" "example" {
-  subnet_id      = azurerm_subnet.example.id
-  route_table_id = azurerm_route_table.example.id
-}
-
 # create std NSG and NSG rule
 
 resource "azurerm_network_security_group" "mysubnet-nsg" {
