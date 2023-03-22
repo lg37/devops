@@ -27,8 +27,8 @@ module "hubvnet" {
     subnet2 = azurerm_network_security_group.mysubnet-nsg.id
   }
   route_tables_ids = {
-    "AzureFirewallSubnet" = azurerm_route_table.firewall-route-table.id,
-    "subnet2" = azurerm_route_table.firewall-route-table.id
+    AzureFirewallSubnet = azurerm_route_table.firewall-route-table.id,
+    subnet2             = azurerm_route_table.firewall-route-table.id
   }
   tags = {
     env = "adv"
@@ -51,8 +51,8 @@ module "spoke1vnet" {
     subnet2 = azurerm_network_security_group.mysubnet-nsg.id
   }
   route_tables_ids = {
-    "AzureFirewallSubnet" = azurerm_route_table.firewall-route-table.id,
-    "subnet2" = azurerm_route_table.firewall-route-table.id
+    subnet1 = azurerm_route_table.firewall-route-table.id,
+    subnet2 = azurerm_route_table.firewall-route-table.id
   }
   tags = {
     env = "adv"
@@ -83,9 +83,9 @@ resource "azurerm_route_table" "firewall-route-table" {
   disable_bgp_route_propagation = false
 
   route {
-    name           = "fw-route"
-    address_prefix = "0.0.0.0/0"
-    next_hop_type  = "VirtualAppliance"
+    name                   = "fw-route"
+    address_prefix         = "0.0.0.0/0"
+    next_hop_type          = "VirtualAppliance"
     next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
   }
 
