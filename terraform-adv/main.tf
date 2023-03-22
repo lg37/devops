@@ -26,6 +26,10 @@ module "hubvnet" {
   nsg_ids = {
     subnet2 = azurerm_network_security_group.mysubnet-nsg.id
   }
+  route_tables_ids = {
+    AzureFirewallSubnet = azurerm_route_table.firewall-route-table.id,
+    subnet2 = azurerm_route_table.firewall-route-table.id
+  }
   tags = {
     env = "adv"
   }
@@ -45,6 +49,10 @@ module "spoke1vnet" {
   nsg_ids = {
     subnet1 = azurerm_network_security_group.mysubnet-nsg.id,
     subnet2 = azurerm_network_security_group.mysubnet-nsg.id
+  }
+  route_tables_ids = {
+    AzureFirewallSubnet = azurerm_route_table.firewall-route-table.id,
+    subnet2 = azurerm_route_table.firewall-route-table.id
   }
   tags = {
     env = "adv"
@@ -84,6 +92,13 @@ resource "azurerm_route_table" "firewall-route-table" {
   tags = {
     env = "adv"
   }
+}
+
+# associate Route table to subnets
+
+resource "azurerm_subnet_route_table_association" "example" {
+  subnet_id      = azurerm_subnet.example.id
+  route_table_id = azurerm_route_table.example.id
 }
 
 # create std NSG and NSG rule
