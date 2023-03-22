@@ -50,6 +50,43 @@ module "spoke1vnet" {
     env = "adv"
   }
 }
+# add vnet peerings
+
+resource "azurerm_virtual_network_peering" "hub-to-spoke1" {
+  name                      = "hub-to-spoke1"
+  resource_group_name       = azurerm_resource_group.myrg.name
+  virtual_network_name      = azurerm_virtual_network.hubvnet.name
+  remote_virtual_network_id = azurerm_virtual_network.spoke1vnet.id
+}
+
+resource "azurerm_virtual_network_peering" "spoke1-to-hub" {
+  name                      = "spoke1-to-hub"
+  resource_group_name       = azurerm_resource_group.myrg.name
+  virtual_network_name      = azurerm_virtual_network.spoke1vnet.name
+  remote_virtual_network_id = azurerm_virtual_network.hubvnet.id
+}
+
+# create default route to NVA (force traffic to hub firewall)
+
+resource "azurerm_route_table" "firewall-route-table" {
+  name                          = "firewall-route-table"
+  location                      = azurerm_resource_group.myrg.location
+  resource_group_name           = azurerm_resource_group.myrg.name
+  disable_bgp_route_propagation = false
+
+  route {
+    name                   = "fw-route"
+    address_prefix         = "0.0.0.0/0"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
+  }
+
+  tags = {
+    env = "adv"
+  }
+}
+
+# create std NSG and NSG rule
 
 resource "azurerm_network_security_group" "mysubnet-nsg" {
   name                = "subnets-nsg"
@@ -74,6 +111,7 @@ resource "azurerm_network_security_rule" "subnet-nsg-rule" {
   network_security_group_name = azurerm_network_security_group.mysubnet-nsg.name
 }
 
+# Create some VMs
 module "add_vm" {
   source    = "./modules/m-linuxvm"
   vm_name   = "test-linux"
@@ -83,6 +121,16 @@ module "add_vm" {
   subnet_id = module.spoke1vnet.vnet_subnets[0]
 }
 
+module "add_vm" {
+  source    = "./modules/m-windowsvm"
+  vm_name   = "test-windows"
+  vm_size   = "Standard_F2"
+  rg        = azurerm_resource_group.myrg.name
+  location  = "westeurope"
+  subnet_id = module.hubvnet.vnet_subnets[1]
+}
+
+# Create Firewall into HUB vnet
 resource "azurerm_public_ip" "firewall-pip" {
   name                = "firewall-pip"
   resource_group_name = azurerm_resource_group.myrg.name
