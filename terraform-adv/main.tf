@@ -27,7 +27,6 @@ module "hubvnet" {
     subnet2 = azurerm_network_security_group.mysubnet-nsg.id
   }
   route_tables_ids = {
-    AzureFirewallSubnet = azurerm_route_table.firewall-route-table.id,
     subnet2             = azurerm_route_table.firewall-route-table.id
   }
   tags = {
