@@ -29,7 +29,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "hubfirewall-policy-rul
       name                  = "network_rule_collection1_rule1"
       protocols             = ["TCP", "UDP"]
       source_addresses      = ["10.2.1.4"]
-      destination_addresses = ["192.168.1.1", "192.168.1.2"]
+      destination_addresses = ["10.1.2.4", "10.1.2.5"]
       destination_ports     = ["80", "1000-2000"]
     }
   }
@@ -39,13 +39,13 @@ resource "azurerm_firewall_policy_rule_collection_group" "hubfirewall-policy-rul
     priority = 300
     action   = "Dnat"
     rule {
-      name                = "ssh_nat"
+      name                = "rdp_nat"
       protocols           = ["TCP"]
       source_addresses    = ["*"]
       destination_address = data.azurerm_public_ip.firewall-pip.ip_address
-      destination_ports   = ["22"]
+      destination_ports   = ["3389"]
       translated_address  = "10.2.1.4"
-      translated_port     = "22"
+      translated_port     = "3389"
     }
   }
 }

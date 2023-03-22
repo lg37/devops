@@ -75,9 +75,9 @@ resource "azurerm_route_table" "firewall-route-table" {
   disable_bgp_route_propagation = false
 
   route {
-    name                   = "fw-route"
-    address_prefix         = "0.0.0.0/0"
-    next_hop_type          = "VirtualAppliance"
+    name           = "fw-route"
+    address_prefix = "0.0.0.0/0"
+    next_hop_type  = "VirtualAppliance"
     next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
   }
 
@@ -112,22 +112,22 @@ resource "azurerm_network_security_rule" "subnet-nsg-rule" {
 }
 
 # Create some VMs
-module "add_vm" {
+module "add_vm_linux" {
   source    = "./modules/m-linuxvm"
   vm_name   = "test-linux"
   vm_size   = "Standard_F2"
   rg        = azurerm_resource_group.myrg.name
   location  = "westeurope"
-  subnet_id = module.spoke1vnet.vnet_subnets[0]
+  subnet_id = module.hubvnet.vnet_subnets[1]
 }
 
-module "add_vm" {
+module "add_vm_windows" {
   source    = "./modules/m-windowsvm"
   vm_name   = "test-windows"
   vm_size   = "Standard_F2"
   rg        = azurerm_resource_group.myrg.name
   location  = "westeurope"
-  subnet_id = module.hubvnet.vnet_subnets[1]
+  subnet_id = module.spoke1vnet.vnet_subnets[0]
 }
 
 # Create Firewall into HUB vnet
