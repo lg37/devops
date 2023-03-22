@@ -30,7 +30,7 @@ resource "azurerm_windows_virtual_machine" "mywindows" {
   location            = var.location
   size                = var.vm_size
   admin_username      = "azureuser"
-  admin_password      = "Password1234!"
+  admin_password      = "Password123!"
   network_interface_ids = [
     azurerm_network_interface.nic.id,
   ]
