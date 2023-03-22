@@ -11,6 +11,8 @@ trigger:
     exclude:
     - terraform-adv\destroy.yml
 
+pr: none
+
 pool:
   vmImage: ubuntu-latest
 
