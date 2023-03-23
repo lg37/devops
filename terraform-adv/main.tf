@@ -27,7 +27,7 @@ module "hubvnet" {
     subnet2 = azurerm_network_security_group.mysubnet-nsg.id
   }
   route_tables_ids = {
-    subnet2             = azurerm_route_table.firewall-route-table.id
+    subnet2 = azurerm_route_table.firewall-route-table.id
   }
   tags = {
     env = "adv"
@@ -40,7 +40,7 @@ module "spoke1vnet" {
 
   vnet_name           = var.SPOKE1_VNET_NAME
   resource_group_name = azurerm_resource_group.myrg.name
-  use_for_each        = true
+  use_for_each        = false
   vnet_location       = azurerm_resource_group.myrg.location
   address_space       = ["10.2.0.0/16"]
   subnet_names        = ["subnet1", "subnet2"]
@@ -80,17 +80,18 @@ resource "azurerm_route_table" "firewall-route-table" {
   location                      = azurerm_resource_group.myrg.location
   resource_group_name           = azurerm_resource_group.myrg.name
   disable_bgp_route_propagation = false
-
-  route {
-    name                   = "fw-route"
-    address_prefix         = "0.0.0.0/0"
-    next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
-  }
-
   tags = {
     env = "adv"
   }
+}
+
+resource "azurerm_route" "fw-route" {
+  name                   = "fw-route"
+  resource_group_name    = azurerm_resource_group.myrg.name
+  route_table_name       = azurerm_route_table.firewall-route-table.name
+  address_prefix         = "0.0.0.0/0"
+  next_hop_type          = "VirtualAppliance"
+  next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
 }
 
 # create std NSG and NSG rule

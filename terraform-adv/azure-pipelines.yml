@@ -19,7 +19,7 @@ pool:
 variables:
   azure_connection: 'VS'
   key_vault_name: 'mylgkv'
-  TF_VAR_RG_NAME: 'devops-rg-test'
+  TF_VAR_RG_NAME: 'devops-rg'
   TF_VAR_HUB_VNET_NAME : 'devops-hub-vnet'
   TF_VAR_SPOKE1_VNET_NAME : 'devops-spoke1-vnet'
 
