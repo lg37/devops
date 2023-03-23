@@ -57,6 +57,30 @@ module "spoke1vnet" {
     env = "adv"
   }
 }
+
+module "spoke2vnet" {
+  source  = "Azure/vnet/azurerm"
+  version = "4.0.0"
+
+  vnet_name           = var.SPOKE2_VNET_NAME
+  resource_group_name = azurerm_resource_group.myrg.name
+  use_for_each        = false
+  vnet_location       = azurerm_resource_group.myrg.location
+  address_space       = ["10.3.0.0/16"]
+  subnet_names        = ["subnet1", "subnet2"]
+  subnet_prefixes     = ["10.3.1.0/24", "10.3.2.0/24"]
+  nsg_ids = {
+    subnet1 = azurerm_network_security_group.mysubnet-nsg.id,
+    subnet2 = azurerm_network_security_group.mysubnet-nsg.id
+  }
+  route_tables_ids = {
+    subnet1 = azurerm_route_table.firewall-route-table.id,
+    subnet2 = azurerm_route_table.firewall-route-table.id
+  }
+  tags = {
+    env = "adv"
+  }
+}
 # add vnet peerings
 
 resource "azurerm_virtual_network_peering" "hub-to-spoke1" {
@@ -70,6 +94,20 @@ resource "azurerm_virtual_network_peering" "spoke1-to-hub" {
   name                      = "spoke1-to-hub"
   resource_group_name       = azurerm_resource_group.myrg.name
   virtual_network_name      = module.spoke1vnet.vnet_name
+  remote_virtual_network_id = module.hubvnet.vnet_id
+}
+
+resource "azurerm_virtual_network_peering" "hub-to-spoke2" {
+  name                      = "hub-to-spoke2"
+  resource_group_name       = azurerm_resource_group.myrg.name
+  virtual_network_name      = module.hubvnet.vnet_name
+  remote_virtual_network_id = module.spoke2vnet.vnet_id
+}
+
+resource "azurerm_virtual_network_peering" "spoke2-to-hub" {
+  name                      = "spoke2-to-hub"
+  resource_group_name       = azurerm_resource_group.myrg.name
+  virtual_network_name      = module.spoke2vnet.vnet_name
   remote_virtual_network_id = module.hubvnet.vnet_id
 }
 
@@ -136,6 +174,15 @@ module "add_vm_windows" {
   rg        = azurerm_resource_group.myrg.name
   location  = "westeurope"
   subnet_id = module.spoke1vnet.vnet_subnets[0]
+}
+
+module "add_vm_windows2" {
+  source    = "./modules/m-windowsvm"
+  vm_name   = "test-windows2"
+  vm_size   = "Standard_F2"
+  rg        = azurerm_resource_group.myrg.name
+  location  = "westeurope"
+  subnet_id = module.spoke2vnet.vnet_subnets[0]
 }
 
 # Create Firewall into HUB vnet

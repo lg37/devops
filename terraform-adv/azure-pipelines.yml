@@ -22,6 +22,7 @@ variables:
   TF_VAR_RG_NAME: 'devops-rg'
   TF_VAR_HUB_VNET_NAME : 'devops-hub-vnet'
   TF_VAR_SPOKE1_VNET_NAME : 'devops-spoke1-vnet'
+  TF_VAR_SPOKE2_VNET_NAME : 'devops-spoke2-vnet'
 
 stages:     
   - stage: tfvalidate

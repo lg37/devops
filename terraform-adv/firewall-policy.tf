@@ -22,15 +22,15 @@ resource "azurerm_firewall_policy_rule_collection_group" "hubfirewall-policy-rul
   }
 
   network_rule_collection {
-    name     = "network_rule_collection1"
+    name     = "network_rule_collection_allow"
     priority = 400
     action   = "Allow"
     rule {
-      name                  = "network_rule_collection1_rule1"
+      name                  = "Allow RDP"
       protocols             = ["TCP", "UDP"]
-      source_addresses      = ["10.2.1.4"]
-      destination_addresses = ["10.1.2.4", "10.1.2.5"]
-      destination_ports     = ["80", "1000-2000"]
+      source_addresses      = ["10.2.1.4", "10.3.1.4"]
+      destination_addresses = ["*"]
+      destination_ports     = ["3389"]
     }
   }
 

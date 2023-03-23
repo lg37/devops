@@ -10,5 +10,10 @@ variable "HUB_VNET_NAME" {
 
 variable "SPOKE1_VNET_NAME" {
   type    = string
-  default = "spoke"
+  default = "spoke1"
+}
+
+variable "SPOKE2_VNET_NAME" {
+  type    = string
+  default = "spoke2"
 }
