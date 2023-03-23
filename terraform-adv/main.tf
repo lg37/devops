@@ -50,8 +50,8 @@ module "spoke1vnet" {
     subnet2 = azurerm_network_security_group.mysubnet-nsg.id
   }
   route_tables_ids = {
-    subnet1 = azurerm_route_table.firewall-route-table.id,
-    subnet2 = azurerm_route_table.firewall-route-table.id
+    subnet1 = azurerm_route_table.spoke1-route-table.id,
+    subnet2 = azurerm_route_table.spoke1-route-table.id
   }
   tags = {
     env = "adv"
@@ -74,8 +74,8 @@ module "spoke2vnet" {
     subnet2 = azurerm_network_security_group.mysubnet-nsg.id
   }
   route_tables_ids = {
-    subnet1 = azurerm_route_table.firewall-route-table.id,
-    subnet2 = azurerm_route_table.firewall-route-table.id
+    subnet1 = azurerm_route_table.spoke2-route-table.id,
+    subnet2 = azurerm_route_table.spoke2-route-table.id
   }
   tags = {
     env = "adv"
@@ -113,8 +113,8 @@ resource "azurerm_virtual_network_peering" "spoke2-to-hub" {
 
 # create default route to NVA (force traffic to hub firewall)
 
-resource "azurerm_route_table" "firewall-route-table" {
-  name                          = "firewall-route-table"
+resource "azurerm_route_table" "spoke1-route-table" {
+  name                          = "spoke1-route-table"
   location                      = azurerm_resource_group.myrg.location
   resource_group_name           = azurerm_resource_group.myrg.name
   disable_bgp_route_propagation = false
@@ -123,11 +123,70 @@ resource "azurerm_route_table" "firewall-route-table" {
   }
 }
 
-resource "azurerm_route" "fw-route" {
-  name                   = "fw-route"
+resource "azurerm_route_table" "spoke2vnet-route-table" {
+  name                          = "spoke2vnet-route-table"
+  location                      = azurerm_resource_group.myrg.location
+  resource_group_name           = azurerm_resource_group.myrg.name
+  disable_bgp_route_propagation = false
+  tags = {
+    env = "adv"
+  }
+}
+
+# UDR for Spoke1
+
+resource "azurerm_route" "spoke1-default-route" {
+  name                   = "spoke1-default-route"
   resource_group_name    = azurerm_resource_group.myrg.name
-  route_table_name       = azurerm_route_table.firewall-route-table.name
+  route_table_name       = azurerm_route_table.spoke1-route-table.name
   address_prefix         = "0.0.0.0/0"
+  next_hop_type          = "VirtualAppliance"
+  next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
+}
+
+resource "azurerm_route" "spoke1-spoke2-route" {
+  name                   = "spoke1-spoke2-route"
+  resource_group_name    = azurerm_resource_group.myrg.name
+  route_table_name       = azurerm_route_table.spoke1-route-table.name
+  address_prefix         = "10.3.0.0/16"
+  next_hop_type          = "VirtualAppliance"
+  next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
+}
+
+resource "azurerm_route" "spoke1-hub-route" {
+  name                   = "spoke1-hub-route"
+  resource_group_name    = azurerm_resource_group.myrg.name
+  route_table_name       = azurerm_route_table.spoke1-route-table.name
+  address_prefix         = "10.1.0.0/16"
+  next_hop_type          = "VirtualAppliance"
+  next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
+}
+
+# UDR for Spoke2
+
+resource "azurerm_route" "spoke2-default-route" {
+  name                   = "spoke2-default-route"
+  resource_group_name    = azurerm_resource_group.myrg.name
+  route_table_name       = azurerm_route_table.spoke2-route-table.name
+  address_prefix         = "0.0.0.0/0"
+  next_hop_type          = "VirtualAppliance"
+  next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
+}
+
+resource "azurerm_route" "spoke2-spoke1-route" {
+  name                   = "spoke2-spoke1-route"
+  resource_group_name    = azurerm_resource_group.myrg.name
+  route_table_name       = azurerm_route_table.spoke2-route-table.name
+  address_prefix         = "10.2.0.0/16"
+  next_hop_type          = "VirtualAppliance"
+  next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
+}
+
+resource "azurerm_route" "spoke2-hub-route" {
+  name                   = "spoke2-hub-route"
+  resource_group_name    = azurerm_resource_group.myrg.name
+  route_table_name       = azurerm_route_table.spoke2-route-table.name
+  address_prefix         = "10.1.0.0/16"
   next_hop_type          = "VirtualAppliance"
   next_hop_in_ip_address = azurerm_firewall.hub-firewall.ip_configuration[0].private_ip_address
 }
