@@ -111,7 +111,7 @@ resource "azurerm_virtual_network_peering" "spoke2-to-hub" {
   remote_virtual_network_id = module.hubvnet.vnet_id
 }
 
-# create default route to NVA (force traffic to hub firewall)
+# UDR for Spoke1
 
 resource "azurerm_route_table" "spoke1-route-table" {
   name                          = "spoke1-route-table"
@@ -122,18 +122,6 @@ resource "azurerm_route_table" "spoke1-route-table" {
     env = "adv"
   }
 }
-
-resource "azurerm_route_table" "spoke2vnet-route-table" {
-  name                          = "spoke2vnet-route-table"
-  location                      = azurerm_resource_group.myrg.location
-  resource_group_name           = azurerm_resource_group.myrg.name
-  disable_bgp_route_propagation = false
-  tags = {
-    env = "adv"
-  }
-}
-
-# UDR for Spoke1
 
 resource "azurerm_route" "spoke1-default-route" {
   name                   = "spoke1-default-route"
@@ -163,6 +151,16 @@ resource "azurerm_route" "spoke1-hub-route" {
 }
 
 # UDR for Spoke2
+
+resource "azurerm_route_table" "spoke2-route-table" {
+  name                          = "spoke2-route-table"
+  location                      = azurerm_resource_group.myrg.location
+  resource_group_name           = azurerm_resource_group.myrg.name
+  disable_bgp_route_propagation = false
+  tags = {
+    env = "adv"
+  }
+}
 
 resource "azurerm_route" "spoke2-default-route" {
   name                   = "spoke2-default-route"
