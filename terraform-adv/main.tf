@@ -256,6 +256,11 @@ resource "azurerm_public_ip" "firewall-pip" {
   }
 }
 
+data "azurerm_public_ip" "firewall-pip" {
+  name                = azurerm_public_ip.firewall-pip.name
+  resource_group_name = azurerm_resource_group.myrg.name
+}
+
 resource "azurerm_firewall_policy" "hubfirewall-policy" {
   name                = "hubfirewall-policy"
   location            = azurerm_resource_group.myrg.location
