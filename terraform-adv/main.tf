@@ -85,6 +85,7 @@ resource "azurerm_virtual_network_peering" "hub-to-spoke1" {
   resource_group_name       = azurerm_resource_group.myrg.name
   virtual_network_name      = module.hubvnet.vnet_name
   remote_virtual_network_id = module.spoke1vnet.vnet_id
+  allow_forwarded_traffic = true
 }
 
 resource "azurerm_virtual_network_peering" "spoke1-to-hub" {
@@ -92,6 +93,7 @@ resource "azurerm_virtual_network_peering" "spoke1-to-hub" {
   resource_group_name       = azurerm_resource_group.myrg.name
   virtual_network_name      = module.spoke1vnet.vnet_name
   remote_virtual_network_id = module.hubvnet.vnet_id
+  allow_forwarded_traffic = true
 }
 
 resource "azurerm_virtual_network_peering" "hub-to-spoke2" {
@@ -99,6 +101,7 @@ resource "azurerm_virtual_network_peering" "hub-to-spoke2" {
   resource_group_name       = azurerm_resource_group.myrg.name
   virtual_network_name      = module.hubvnet.vnet_name
   remote_virtual_network_id = module.spoke2vnet.vnet_id
+  allow_forwarded_traffic = true
 }
 
 resource "azurerm_virtual_network_peering" "spoke2-to-hub" {
@@ -106,6 +109,7 @@ resource "azurerm_virtual_network_peering" "spoke2-to-hub" {
   resource_group_name       = azurerm_resource_group.myrg.name
   virtual_network_name      = module.spoke2vnet.vnet_name
   remote_virtual_network_id = module.hubvnet.vnet_id
+  allow_forwarded_traffic = true
 }
 
 # UDR for Spoke1
@@ -114,7 +118,7 @@ resource "azurerm_route_table" "spoke1-route-table" {
   name                          = "spoke1-route-table"
   location                      = azurerm_resource_group.myrg.location
   resource_group_name           = azurerm_resource_group.myrg.name
-  disable_bgp_route_propagation = false
+  disable_bgp_route_propagation = true
   tags = {
     env = "adv"
   }
@@ -153,7 +157,7 @@ resource "azurerm_route_table" "spoke2-route-table" {
   name                          = "spoke2-route-table"
   location                      = azurerm_resource_group.myrg.location
   resource_group_name           = azurerm_resource_group.myrg.name
-  disable_bgp_route_propagation = false
+  disable_bgp_route_propagation = true
   tags = {
     env = "adv"
   }
@@ -212,14 +216,14 @@ resource "azurerm_network_security_rule" "subnet-nsg-rule" {
 }
 
 # Create some VMs
-module "add_vm_linux" {
-  source    = "./modules/m-linuxvm"
-  vm_name   = "test-linux"
-  vm_size   = "Standard_F2"
-  rg        = azurerm_resource_group.myrg.name
-  location  = "westeurope"
-  subnet_id = module.hubvnet.vnet_subnets[1]
-}
+# module "add_vm_linux" {
+#  source    = "./modules/m-linuxvm"
+#  vm_name   = "test-linux"
+#  vm_size   = "Standard_F2"
+#  rg        = azurerm_resource_group.myrg.name
+#  location  = "westeurope"
+#  subnet_id = module.hubvnet.vnet_subnets[1]
+#}
 
 module "add_vm_windows" {
   source    = "./modules/m-windowsvm"
@@ -252,11 +256,6 @@ resource "azurerm_public_ip" "firewall-pip" {
   }
 }
 
-data "azurerm_public_ip" "firewall-pip" {
-  name                = azurerm_public_ip.firewall-pip.name
-  resource_group_name = azurerm_resource_group.myrg.name
-}
-
 resource "azurerm_firewall_policy" "hubfirewall-policy" {
   name                = "hubfirewall-policy"
   location            = azurerm_resource_group.myrg.location
@@ -268,7 +267,7 @@ resource "azurerm_firewall" "hub-firewall" {
   resource_group_name = azurerm_resource_group.myrg.name
   location            = azurerm_resource_group.myrg.location
   sku_name            = "AZFW_VNet"
-  sku_tier            = "Standard"
+  sku_tier            = "Basic"
   firewall_policy_id  = azurerm_firewall_policy.hubfirewall-policy.id
 
   ip_configuration {
